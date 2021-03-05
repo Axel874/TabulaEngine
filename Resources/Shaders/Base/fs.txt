@@ -1,0 +1,46 @@
+#version 330 core
+out vec4 FragColor;
+
+in vec2 texCoord;
+in vec3 Normal;
+in vec3 WorldPos;
+
+struct Light{
+	vec3 position;
+
+	vec3 ambientFactor;
+	vec3 diffuseFactor;
+	vec3 specularFactor;
+};
+struct Material{
+	sampler2D diffuseTexture;
+	sampler2D specularTexture;
+	float shininess;
+};
+
+uniform vec3 camPos;
+uniform Light light;
+uniform Material material;
+
+void main()
+{
+	//ambient Lighting, general light impact
+	vec3 ambient = light.ambientFactor * texture(material.diffuseTexture, texCoord).rgb;
+
+	//diffuse lighting (using normals to determine the allignment 
+	//with the light source and lighting it up accordingly)
+	vec3 lightDir = normalize(light.position - WorldPos);
+	float allignmentFactor = max(dot(Normal, lightDir),0.0);
+	vec3 diffuse = light.diffuseFactor * allignmentFactor * texture(material.diffuseTexture, texCoord).rgb;
+
+	//specular lighting (using normals, we reflect light off of our fragment,
+	//then we calculate how alligned our vision is to that reflected light, to determine
+	//the reflective light impact)
+	vec3 viewDirection = normalize(camPos - WorldPos);
+	vec3 reflectedDirection = reflect(-lightDir, Normal);
+	float specularFactor = pow(max(dot(viewDirection, reflectedDirection),0.0), material.shininess);
+	vec3 specular = light.specularFactor * specularFactor * texture(material.specularTexture, texCoord).rgb;
+
+	FragColor = vec4(ambient + diffuse + specular,1.0f);
+	//FragColor = vec4(texture(material.diffuseTexture, texCoord).rgb, 1.0f);
+}

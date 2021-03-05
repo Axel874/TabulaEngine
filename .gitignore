@@ -1,0 +1,7 @@
+Debug/
+x86/
+x64/
+.vs/
+*.sln
+*.vcxproj*
+*.props
