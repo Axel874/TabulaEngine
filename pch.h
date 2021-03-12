@@ -30,6 +30,7 @@
 #include <string>
 #include <chrono>
 #include <fstream>
+#include <vector>
 
 //my headers
 #include "Window.h"

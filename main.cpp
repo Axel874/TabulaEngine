@@ -8,8 +8,8 @@ int main(int argc, char* argv[])
 	StartHeapControl();
 	{//scope for mem check
 		const Window w{
-			"My little program",SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-			512,512, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE,true,60
+			"TabulaGame",SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+			1080,512, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE,true,60
 		};
 
 		Core core = Core(w, true);

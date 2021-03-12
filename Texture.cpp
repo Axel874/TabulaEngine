@@ -35,7 +35,7 @@ void Texture::LoadTexture(const std::string& src, const GLint& format)
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, imgData);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
-	else { utils::LogWarning("Failed to load texture"); }
+	else { utils::LogWarning("Failed to load texture" + src); }
 	stbi_image_free(imgData);
 }
 void Texture::SetParameters()

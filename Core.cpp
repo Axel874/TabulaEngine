@@ -3,6 +3,8 @@
 #include "ProgramShader.h"
 #include "Texture.h"
 #include "Camera.h"
+#include "Sprite.h"
+
 #define LogWarning(message) LogWarning(message, __FILE__, __LINE__)
 
 //public
@@ -26,104 +28,40 @@ void Core::RunGameLoop()
 {
 	TimePoint t1 = Now(); //initial time stamp
 
-	float vertices[] = {
-		// positions          // normals           // texture coords
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+	Sprite box = Sprite("./resources/images/boxDiffuse.png", glm::vec3(0, 0, 0), glm::vec2(100, 100));
 
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
-
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
-	};
-	unsigned int indices[] = {
-	 0, 1, 3, // first triangle
-	 1, 2, 3  // second triangle
-	};
-
+	//create vertex array object and bind it
 	unsigned int VAO;
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
+	//create data buffer
 	GLuint VBO{};
 	glGenBuffers(1, &VBO);
+	//bind data buffer to vertex array object
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	GLuint EBO{};
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	//push vertex data to buffer
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*24, box.GetVertexData(), GL_STATIC_DRAW);
+	//set info about where to find 1st attribute of our data
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3* sizeof(float)));
+	//idem for 2d attribute
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2* sizeof(float)));
 	glEnableVertexAttribArray(1);
 
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-
-
-	glBindVertexArray(VAO);
+	glBindVertexArray(0);
 
 	//texture loading
-	Texture boxDiffuseTexture = Texture("./resources/images/boxDiffuse.png", GL_RGBA);
-	Texture boxSpecularTexture = Texture("./resources/images/boxSpecular.png", GL_RGBA);
+	Texture boxDiffuseTexture = Texture(box.GetSource(), GL_RGBA);
+	//bind to texture unit 1/16
 	boxDiffuseTexture.Bind(GL_TEXTURE0);
-	boxSpecularTexture.Bind(GL_TEXTURE1);
 
+	//load base shader program
 	ProgramShader shader = ProgramShader("./resources/shaders/base");
-	shader.Bind();
-	shader.setInt("material.diffuseTexture", 0);
-	shader.setInt("material.specularTexture", 1);
-	shader.setFloat("material.shininess", 64.0f);
+	//bind the shader for use
+	shader.setInt("ourTexture", 0);
 
-	shader.setVector3f("light.ambientFactor", glm::vec3(0.2f, 0.2f, 0.2f));
-	shader.setVector3f("light.diffuseFactor", glm::vec3(1.0f, 1.0f, 1.0f));
-	shader.setVector3f("light.specularFactor", glm::vec3(1.0f, 1.0f, 1.0f));
-	ProgramShader lightShader = ProgramShader("./resources/shaders/light");
-
-	m_LightColor = glm::vec3(1.0f, 1.0f, 1.0f);
-	m_LightPosition = glm::vec3(5.0f, 5.0f, 0.0f);
-
-	m_pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.0f, 0.2f);
-
-
+	m_pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 500.0f, glm::vec3(0.0f, 0.0f, -1.0f));
 	//while HandleSDLEvents doese not return true (aka have to quit), run game loop
 	while (!HandleSDLEvents()) {
 		TimePoint t2 = Now();
@@ -135,39 +73,23 @@ void Core::RunGameLoop()
 			t1 = t2;
 			//update game
 			glm::mat4 view = m_pCamera->GetViewMatrix();
-			glm::mat4 projection = glm::perspective(glm::radians(45.0f), float(m_Window.w) / float(m_Window.w), 0.1f, 100.0f);
+			glm::mat4 projectionOrtho = glm::ortho(0.f, 500.0f, 0.f, 280.f, 5.0f, -5.0f);
 			glm::mat4 model = glm::mat4(1.0f);
 
-			m_LightPosition.x = 5*sin(SDL_GetTicks()/1000.0f);
-			m_LightPosition.y = 5*cos(SDL_GetTicks()/1000.0f);
 
-			shader.Bind();
 			shader.setMatrix4fv("view", view);
-			shader.setMatrix4fv("projection", projection);
-
-			shader.setVector3f("camPos", m_pCamera->GetPosition());
-			shader.setVector3f("light.position", m_LightPosition);
-			
+			shader.setMatrix4fv("projection", projectionOrtho);
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			//draw objects
-			for (int i = 0; i < 2; i++) {
-				model = glm::translate(model, glm::vec3(i * 2, 0, 0));
-				model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(0.2f, 0.8f, 0.6f));
-				shader.setMatrix4fv("model", model);
-				glDrawArrays(GL_TRIANGLES, 0, 36);
-			}
+			//model = glm::translate(model, glm::vec3(i * 2, 0, 0));
+			//model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(0.2f, 0.8f, 0.6f));
+			shader.setMatrix4fv("model", model);
 
-			////draw lights
-			lightShader.Bind();
-			lightShader.setVector3f("lightColor", glm::vec3(0.5f, 0.5f, 0.5f));
-			lightShader.setMatrix4fv("view", view);
-			lightShader.setMatrix4fv("projection", projection);
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, m_LightPosition);
-			lightShader.setMatrix4fv("model", model);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-			std::cout << "ambient: " << m_AmbientStrength << ";specular: " << m_SpecularStrength << ";specularc: " << m_SpecularConcentration << std::endl;
+
+			shader.Bind();
+			glBindVertexArray(VAO);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
 			//swap drawn buffer with render buffer
 			SDL_GL_SwapWindow(m_pSDLWindow);
 		}
@@ -181,37 +103,14 @@ void Core::HandleUserInput(float deltaTime)
 }
 void Core::ProcessMouseMovement()
 {
-	int xpos, ypos;
-	SDL_GetMouseState(&xpos, &ypos);
-	if (firstMouse)
-	{
-		lastX = float(xpos);
-		lastY = float(ypos);
-		firstMouse = false;
-	}
-
-	float xoffset = xpos - lastX;
-	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-	lastX = float(xpos);
-	lastY = float(ypos);
-
-	m_pCamera->ProcessMouseMovement(xoffset, yoffset, true);
 }
 void Core::ProcessKeyStates(float& deltaTime)
 {
 	const Uint8* keyStates = SDL_GetKeyboardState(NULL);
-	if (keyStates[SDL_SCANCODE_W])m_pCamera->ProcessKeyState(CameraMovement::FORWARDS, deltaTime);
-	if (keyStates[SDL_SCANCODE_S])m_pCamera->ProcessKeyState(CameraMovement::BACKWARDS, deltaTime);
+	if (keyStates[SDL_SCANCODE_W])m_pCamera->ProcessKeyState(CameraMovement::UPWARDS, deltaTime);
+	if (keyStates[SDL_SCANCODE_S])m_pCamera->ProcessKeyState(CameraMovement::DOWNWARDS, deltaTime);
 	if (keyStates[SDL_SCANCODE_A])m_pCamera->ProcessKeyState(CameraMovement::LEFT, deltaTime);
 	if (keyStates[SDL_SCANCODE_D])m_pCamera->ProcessKeyState(CameraMovement::RIGHT, deltaTime);
-	//if (keyStates[SDL_SCANCODE_UP] && m_LightColor.x < 1.0f) m_LightColor += glm::vec3(0.01f);
-	//if (keyStates[SDL_SCANCODE_DOWN] && m_LightColor.x > 0.0f) m_LightColor -= glm::vec3(0.01f);
-	if (keyStates[SDL_SCANCODE_O]) m_SpecularConcentration += 1;
-	if (keyStates[SDL_SCANCODE_L]) m_SpecularConcentration -= 1;
-	if (keyStates[SDL_SCANCODE_P] && m_SpecularStrength < 1.0f) m_SpecularStrength += 0.01f;
-	if (keyStates[SDL_GetScancodeFromKey(SDLK_m)] && m_SpecularStrength > 0.0f) m_SpecularStrength -= 0.01f;
-	if (keyStates[SDL_SCANCODE_I] && m_AmbientStrength < 1.0f) m_AmbientStrength += 0.01f;
-	if (keyStates[SDL_SCANCODE_K] && m_AmbientStrength > 0.0f) m_AmbientStrength -= 0.01f;
 
 }
 bool Core::HandleSDLEvents()

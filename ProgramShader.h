@@ -12,6 +12,7 @@ public:
 	void setVector3f(const std::string& name, const glm::vec3& value);
 
 	void Bind();
+	void UnBind();
 private:
 	const GLuint m_Handle;
 
