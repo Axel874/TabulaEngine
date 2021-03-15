@@ -18,6 +18,7 @@ Game::~Game() {
 void Game::Update(float deltaSeconds) {
 	m_pSprites[0]->m_Rotation += (glm::vec3(0, 0, 360 * deltaSeconds));
 	for (Sprite* s : m_pSprites) { s->Update(deltaSeconds); }
+	m_pActiveCamera->Update(deltaSeconds);
 }
 
 void Game::OnKeyDown(const SDL_KeyboardEvent& e){

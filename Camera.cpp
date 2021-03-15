@@ -9,25 +9,13 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float movementSpeed, glm::vec3 
 {
 }
 
-void Camera::ProcessKeyState(const CameraMovement& movement, const float& deltaTime) {
-	const float velocity = m_TranslateSensitivity * deltaTime;
-
-	switch (movement) {
-	case CameraMovement::UPWARDS:
-		m_Position.y += velocity;
-		break;
-	case CameraMovement::DOWNWARDS:
-		m_Position.y -=  velocity;
-		break;
-	case CameraMovement::RIGHT:
-		m_Position.x +=  velocity;
-		break;
-	case CameraMovement::LEFT:
-		m_Position.x -= velocity;
-		break;
-	}
+void Camera::Update(float deltaSeconds){
+	const Uint8* s = SDL_GetKeyboardState(NULL);
+	if (s[SDL_SCANCODE_W])m_Position.y += deltaSeconds * m_TranslateSensitivity;
+	if (s[SDL_SCANCODE_S])m_Position.y -= deltaSeconds * m_TranslateSensitivity;
+	if (s[SDL_SCANCODE_A])m_Position.x -= deltaSeconds * m_TranslateSensitivity;
+	if (s[SDL_SCANCODE_D])m_Position.x += deltaSeconds * m_TranslateSensitivity;
 }
-
 glm::mat4 Camera::GetViewMatrix() const{
 	return glm::lookAt(m_Position, m_Position+m_Direction, m_Up);
 }
