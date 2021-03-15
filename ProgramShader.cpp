@@ -25,32 +25,26 @@ ProgramShader::~ProgramShader() {
 void ProgramShader::setInt(const std::string& name, const int& value) {
 	Bind();
 	glUniform1i(glGetUniformLocation(m_Handle,name.c_str()),value);
-	UnBind();
 }
 void ProgramShader::setFloat(const std::string& name, const float& value){
 	Bind();
 	glUniform1f(glGetUniformLocation(m_Handle, name.c_str()), value);
-	UnBind();
 }
 void ProgramShader::setBool(const std::string& name, const bool& value){
 	Bind();
 	glUniform1i(glGetUniformLocation(m_Handle, name.c_str()), (int)value);
-	UnBind();
 }
 void ProgramShader::setUint(const std::string& name, const unsigned int& value){
 	Bind();
 	glUniform1ui(glGetUniformLocation(m_Handle, name.c_str()), value);
-	UnBind();
 }
 void ProgramShader::setMatrix4fv(const std::string& name, const glm::mat4& value) {
 	Bind();
 	glUniformMatrix4fv(glGetUniformLocation(m_Handle, name.c_str()),1,GL_FALSE, glm::value_ptr(value));
-	UnBind();
 }
 void ProgramShader::setVector3f(const std::string& name, const glm::vec3& value) {
 	Bind();
 	glUniform3fv(glGetUniformLocation(m_Handle, name.c_str()), 1, glm::value_ptr(value));
-	UnBind();
 }
 
 void ProgramShader::Bind() {

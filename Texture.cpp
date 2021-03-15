@@ -2,8 +2,8 @@
 #include "Texture.h"
 #define LogWarning(message) LogWarning(message, __FILE__, __LINE__)
 //public
-Texture::Texture(const std::string& src, const GLint& format) 
-	: m_Handle(glCreateTexture())
+Texture::Texture(const std::string& src, const GLint& format)
+	: m_Handle(glCreateTexture()), m_Src(src)
 {
 	LoadTexture(src, format);
 	SetParameters();
@@ -17,6 +17,8 @@ void Texture::Bind(const GLenum& textureUnit) {
 	glActiveTexture(textureUnit);
 	glBindTexture(GL_TEXTURE_2D, m_Handle);
 }
+std::string Texture::GetSource() const { return m_Src; }
+GLuint Texture::GetHandle() const { return m_Handle; }
 //private
 GLuint Texture::glCreateTexture() {
 	GLuint handle;

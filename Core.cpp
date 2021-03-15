@@ -1,10 +1,9 @@
 #include "pch.h"
 #include "Core.h"
-#include "ProgramShader.h"
-#include "Texture.h"
 #include "Camera.h"
 #include "Sprite.h"
-
+#include "SpriteRenderer.h"
+#include "Game.h"
 #define LogWarning(message) LogWarning(message, __FILE__, __LINE__)
 
 //public
@@ -21,47 +20,18 @@ void Core::Run() {
 	if (m_Initialized) {RunGameLoop();}
 	else {utils::LogWarning("Unable to initialize core");}
 }
-
-
 //private
 void Core::RunGameLoop()
 {
 	TimePoint t1 = Now(); //initial time stamp
-
-	Sprite box = Sprite("./resources/images/boxDiffuse.png", glm::vec3(0, 0, 0), glm::vec2(100, 100));
-
-	//create vertex array object and bind it
-	unsigned int VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	//create data buffer
-	GLuint VBO{};
-	glGenBuffers(1, &VBO);
-	//bind data buffer to vertex array object
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	//push vertex data to buffer
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*24, box.GetVertexData(), GL_STATIC_DRAW);
-	//set info about where to find 1st attribute of our data
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	//idem for 2d attribute
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2* sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glBindVertexArray(0);
-
-	//texture loading
-	Texture boxDiffuseTexture = Texture(box.GetSource(), GL_RGBA);
-	//bind to texture unit 1/16
-	boxDiffuseTexture.Bind(GL_TEXTURE0);
-
-	//load base shader program
-	ProgramShader shader = ProgramShader("./resources/shaders/base");
-	//bind the shader for use
-	shader.setInt("ourTexture", 0);
-
-	m_pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 500.0f, glm::vec3(0.0f, 0.0f, -1.0f));
+	Game* pGame = new Game(); //run game init code
+	SpriteRenderer renderer = SpriteRenderer(pGame->GetSprites()); //initialize sprite renderer
+	m_pCamera = new Camera( //init camera (todo: move to game class and let the renderer read cam info)
+		//also you should propably store quit info in the game class as that is the main processor of events
+		//also add keyboards/mouse events processing to the game class
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f), 
+		500.0f, glm::vec3(0.0f, 0.0f, -1.0f));
 	//while HandleSDLEvents doese not return true (aka have to quit), run game loop
 	while (!HandleSDLEvents()) {
 		TimePoint t2 = Now();
@@ -69,32 +39,15 @@ void Core::RunGameLoop()
 		const bool isTimeToRender = deltaTime > (1.0f / m_Window.fpsLimit);
 		if (isTimeToRender) {
 			HandleUserInput(deltaTime);
-			//update time tracker
+			//update last frame rendered timestamp
 			t1 = t2;
 			//update game
-			glm::mat4 view = m_pCamera->GetViewMatrix();
-			glm::mat4 projectionOrtho = glm::ortho(0.f, 500.0f, 0.f, 280.f, 5.0f, -5.0f);
-			glm::mat4 model = glm::mat4(1.0f);
-
-
-			shader.setMatrix4fv("view", view);
-			shader.setMatrix4fv("projection", projectionOrtho);
-
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			//draw objects
-			//model = glm::translate(model, glm::vec3(i * 2, 0, 0));
-			//model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(0.2f, 0.8f, 0.6f));
-			shader.setMatrix4fv("model", model);
-
-
-			shader.Bind();
-			glBindVertexArray(VAO);
-			glDrawArrays(GL_TRIANGLES, 0, 6);
-			//swap drawn buffer with render buffer
-			SDL_GL_SwapWindow(m_pSDLWindow);
+			pGame->Update(deltaTime);
+			//render sprites
+			renderer.RenderSprites(m_pCamera->GetViewMatrix(), m_pSDLWindow);
 		}
-
 	}
+	delete pGame;
 }
 void Core::HandleUserInput(float deltaTime)
 {
