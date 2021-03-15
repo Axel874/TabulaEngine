@@ -2,7 +2,7 @@
 #include "SpriteRenderer.h"
 #include "Sprite.h"
 
-SpriteRenderer::SpriteRenderer(std::vector<Sprite>& managedSprites)
+SpriteRenderer::SpriteRenderer(std::vector<Sprite*>& managedSprites)
 	: m_rSprites(managedSprites), m_Shader(ProgramShader("./resources/shaders/base")),
 	m_ProjectionMatrix(glm::ortho(0.f, 500.0f, 0.f, 280.f, 5.0f, -5.0f))
 {
@@ -38,7 +38,7 @@ SpriteRenderer::~SpriteRenderer() {
 	for (Texture* t : m_LoadedTextures)delete t;
 }
 
-void SpriteRenderer::SetManagedSprites(std::vector<Sprite>& sprites) { m_rSprites = sprites; }
+void SpriteRenderer::SetManagedSprites(std::vector<Sprite*>& sprites) { m_rSprites = sprites; }
 void SpriteRenderer::RenderSprites(const glm::mat4& viewMatrix, SDL_Window* window) {
 	RenderSetup(viewMatrix);
 
@@ -66,18 +66,18 @@ void SpriteRenderer::RenderSetup(const glm::mat4& viewMatrix)
 }
 void SpriteRenderer::DrawSprites()
 {
-	for (Sprite& s : m_rSprites) {
+	for (Sprite* s : m_rSprites) {
 		DrawSprite(s);
 	}
 }
-void SpriteRenderer::DrawSprite(Sprite& s)
+void SpriteRenderer::DrawSprite(Sprite* s)
 {
 	//get a pointer to the sprite's texture
-	Texture* texture = GetTexture(s.GetSource());
+	Texture* texture = GetTexture(s->GetSource());
 	//tell texture unit 0 to use the sprite's texture
 	texture->Bind(GL_TEXTURE0);
 	//pass sprite model matrix to shader
-	m_Shader.setMatrix4fv("model", s.GetModelMatrix());
+	m_Shader.setMatrix4fv("model", s->GetModelMatrix());
 	//draw our sprite
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }

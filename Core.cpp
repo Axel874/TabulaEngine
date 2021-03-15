@@ -8,7 +8,7 @@
 
 //public
 Core::Core(const Window& windowProperties, const bool& debugMode)
-	: m_Initialized(true), m_pSDLWindow(nullptr),m_Window(windowProperties), m_pCamera(nullptr) {
+	: m_Initialized(true), m_pSDLWindow(nullptr),m_Window(windowProperties) {
 	Initialize();
 	if (debugMode) { InitializeGLDebugCallback(); }
 }
@@ -26,12 +26,7 @@ void Core::RunGameLoop()
 	TimePoint t1 = Now(); //initial time stamp
 	Game* pGame = new Game(); //run game init code
 	SpriteRenderer renderer = SpriteRenderer(pGame->GetSprites()); //initialize sprite renderer
-	m_pCamera = new Camera( //init camera (todo: move to game class and let the renderer read cam info)
-		//also you should propably store quit info in the game class as that is the main processor of events
-		//also add keyboards/mouse events processing to the game class
-		glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f), 
-		500.0f, glm::vec3(0.0f, 0.0f, -1.0f));
+
 	//while HandleSDLEvents doese not return true (aka have to quit), run game loop
 	while (!HandleSDLEvents()) {
 		TimePoint t2 = Now();
@@ -44,7 +39,7 @@ void Core::RunGameLoop()
 			//update game
 			pGame->Update(deltaTime);
 			//render sprites
-			renderer.RenderSprites(m_pCamera->GetViewMatrix(), m_pSDLWindow);
+			renderer.RenderSprites(pGame->GetActiveCamera()->GetViewMatrix(), m_pSDLWindow);
 		}
 	}
 	delete pGame;
@@ -59,11 +54,11 @@ void Core::ProcessMouseMovement()
 }
 void Core::ProcessKeyStates(float& deltaTime)
 {
-	const Uint8* keyStates = SDL_GetKeyboardState(NULL);
-	if (keyStates[SDL_SCANCODE_W])m_pCamera->ProcessKeyState(CameraMovement::UPWARDS, deltaTime);
-	if (keyStates[SDL_SCANCODE_S])m_pCamera->ProcessKeyState(CameraMovement::DOWNWARDS, deltaTime);
-	if (keyStates[SDL_SCANCODE_A])m_pCamera->ProcessKeyState(CameraMovement::LEFT, deltaTime);
-	if (keyStates[SDL_SCANCODE_D])m_pCamera->ProcessKeyState(CameraMovement::RIGHT, deltaTime);
+	//const Uint8* keyStates = SDL_GetKeyboardState(NULL);
+	//if (keyStates[SDL_SCANCODE_W])m_pCamera->ProcessKeyState(CameraMovement::UPWARDS, deltaTime);
+	//if (keyStates[SDL_SCANCODE_S])m_pCamera->ProcessKeyState(CameraMovement::DOWNWARDS, deltaTime);
+	//if (keyStates[SDL_SCANCODE_A])m_pCamera->ProcessKeyState(CameraMovement::LEFT, deltaTime);
+	//if (keyStates[SDL_SCANCODE_D])m_pCamera->ProcessKeyState(CameraMovement::RIGHT, deltaTime);
 
 }
 bool Core::HandleSDLEvents()
@@ -152,7 +147,6 @@ void Core::Terminate() {
 		SDL_GL_DeleteContext(SDL_GL_GetCurrentContext());
 	if (m_pSDLWindow != nullptr)
 		SDL_DestroyWindow(m_pSDLWindow);
-	if (m_pCamera != nullptr)delete m_pCamera;
 	SDL_Quit();
 }
 

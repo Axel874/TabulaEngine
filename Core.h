@@ -21,11 +21,6 @@ private:
 	float lastX = 800.0f / 2.0;
 	float lastY = 600.0 / 2.0;
 
-	Camera* m_pCamera;
-	glm::vec3 m_LightColor;
-	glm::vec3 m_LightPosition;
-	float m_AmbientStrength, m_SpecularStrength, m_SpecularConcentration;
-
 	void Initialize();
 	void InitSDLMouse();
 	void InitGLAD();
