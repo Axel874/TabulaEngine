@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Sprite.h"
+
 //public//
 //static
 //vertex/uv data for drawing a basic sprite in opengl

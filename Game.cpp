@@ -2,11 +2,13 @@
 #include "Game.h"
 #include "Sprite.h"
 #include "Camera.h"
+#include "Player.h"
 //public
 Game::Game() : m_Quitflag(false) {
 	std::string src = "./resources/images/boxDiffuse.png";
 	m_pSprites.push_back(new Sprite(src, glm::vec3(300, 100, 0), glm::vec2(100, 100), glm::vec3(0, 0, 45)));
 	m_pSprites.push_back(new Sprite(src, glm::vec3(0, 100, 0), glm::vec2(100, 100)));
+	m_pSprites.push_back(new Player(glm::vec3(50, 50, -1)));
 
 	m_pActiveCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 500.0f, glm::vec3(0.0f, 0.0f, -1.0f));
 }
