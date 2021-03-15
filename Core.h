@@ -1,6 +1,7 @@
 #pragma once
 struct Window;
 struct SDL_Window;
+class Game;
 class Camera;
 void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id,
 	GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
@@ -33,10 +34,9 @@ private:
 	void Terminate();
 
 	void RunGameLoop();
-	bool HandleSDLEvents();
-	void HandleUserInput(float deltaTime);
-	void ProcessMouseMovement();
-	void ProcessKeyStates(float& deltaTime);
+	bool HandleSDLEvents(Game* pGame);
+
+	void Quit();
 
 	void ResizeGLViewport();
 	TimePoint Now();

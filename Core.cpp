@@ -8,7 +8,7 @@
 
 //public
 Core::Core(const Window& windowProperties, const bool& debugMode)
-	: m_Initialized(true), m_pSDLWindow(nullptr),m_Window(windowProperties) {
+	: m_Initialized(true), m_pSDLWindow(nullptr), m_Window(windowProperties) {
 	Initialize();
 	if (debugMode) { InitializeGLDebugCallback(); }
 }
@@ -17,8 +17,8 @@ Core::~Core() {
 }
 
 void Core::Run() {
-	if (m_Initialized) {RunGameLoop();}
-	else {utils::LogWarning("Unable to initialize core");}
+	if (m_Initialized) { RunGameLoop(); }
+	else { utils::LogWarning("Unable to initialize core"); }
 }
 //private
 void Core::RunGameLoop()
@@ -28,12 +28,11 @@ void Core::RunGameLoop()
 	SpriteRenderer renderer = SpriteRenderer(pGame->GetSprites()); //initialize sprite renderer
 
 	//while HandleSDLEvents doese not return true (aka have to quit), run game loop
-	while (!HandleSDLEvents()) {
+	while (!HandleSDLEvents(pGame)) {
 		TimePoint t2 = Now();
 		float deltaTime = GetTimeDiff(t2, t1);
 		const bool isTimeToRender = deltaTime > (1.0f / m_Window.fpsLimit);
 		if (isTimeToRender) {
-			HandleUserInput(deltaTime);
 			//update last frame rendered timestamp
 			t1 = t2;
 			//update game
@@ -44,25 +43,9 @@ void Core::RunGameLoop()
 	}
 	delete pGame;
 }
-void Core::HandleUserInput(float deltaTime)
+bool Core::HandleSDLEvents(Game* pGame)
 {
-	ProcessKeyStates(deltaTime);
-	ProcessMouseMovement();
-}
-void Core::ProcessMouseMovement()
-{
-}
-void Core::ProcessKeyStates(float& deltaTime)
-{
-	//const Uint8* keyStates = SDL_GetKeyboardState(NULL);
-	//if (keyStates[SDL_SCANCODE_W])m_pCamera->ProcessKeyState(CameraMovement::UPWARDS, deltaTime);
-	//if (keyStates[SDL_SCANCODE_S])m_pCamera->ProcessKeyState(CameraMovement::DOWNWARDS, deltaTime);
-	//if (keyStates[SDL_SCANCODE_A])m_pCamera->ProcessKeyState(CameraMovement::LEFT, deltaTime);
-	//if (keyStates[SDL_SCANCODE_D])m_pCamera->ProcessKeyState(CameraMovement::RIGHT, deltaTime);
-
-}
-bool Core::HandleSDLEvents()
-{
+	if (pGame->ShouldQuit()) { return true; };
 	SDL_Event event{};
 	while (SDL_PollEvent(&event)) {
 
@@ -74,15 +57,43 @@ bool Core::HandleSDLEvents()
 			if (event.window.event == SDL_WINDOWEVENT_RESIZED)ResizeGLViewport();
 			break;
 		case SDL_KEYDOWN:
-			if (event.key.keysym.sym == SDLK_ESCAPE) {
-					SDL_Event quitEvent;
-					quitEvent.type = SDL_QUIT;
-					quitEvent.quit.timestamp = SDL_GetTicks();
-					SDL_PushEvent(&quitEvent);
-			}
+			if (event.key.keysym.sym == SDLK_ESCAPE) {Quit();}
+			pGame->OnKeyDown(event.key);
+			break;
+		case SDL_KEYUP:
+			pGame->OnKeyUp(event.key);
+			break;
+		case SDL_CONTROLLERAXISMOTION:
+			pGame->OnControllerAxisMotion(event.caxis);
+			break;
+		case SDL_CONTROLLERBUTTONDOWN:
+			pGame->onControllerKeyDown(event.cbutton);
+			break;
+		case SDL_CONTROLLERBUTTONUP:
+			pGame->onControllerKeyUp(event.cbutton);
+			break;
+		case SDL_MOUSEMOTION:
+			pGame->onMouseMotion(event.motion);
+			break;
+		case SDL_MOUSEBUTTONDOWN:
+			pGame->onMouseButtonDown(event.button);
+			break;
+		case SDL_MOUSEBUTTONUP:
+			pGame->onMouseButtonUp(event.button);
+			break;
+		case SDL_MOUSEWHEEL:
+			pGame->onMouseWheel(event.wheel);
+			break;
 		}
 	}
 	return false;
+}
+void Core::Quit()
+{
+	SDL_Event quitEvent;
+	quitEvent.type = SDL_QUIT;
+	quitEvent.quit.timestamp = SDL_GetTicks();
+	SDL_PushEvent(&quitEvent);
 }
 
 void Core::Initialize() {
@@ -143,7 +154,7 @@ void Core::InitializeGLDebugCallback()
 }
 
 void Core::Terminate() {
-	if (SDL_GL_GetCurrentContext() != NULL) 
+	if (SDL_GL_GetCurrentContext() != NULL)
 		SDL_GL_DeleteContext(SDL_GL_GetCurrentContext());
 	if (m_pSDLWindow != nullptr)
 		SDL_DestroyWindow(m_pSDLWindow);
