@@ -8,7 +8,7 @@ public:
 
 	void Update(float deltaSeconds);
 private:
-	float m_TranslateSensitivity;
+	float m_Sensitivity;
 	glm::vec3 m_Position;
 	glm::vec3 m_Direction;
 	glm::vec3 m_Up;
