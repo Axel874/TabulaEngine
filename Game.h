@@ -11,9 +11,7 @@ public:
 	Camera* GetActiveCamera() const;
 	bool ShouldQuit() const;
 
-	void Init();
 	void Update(float deltaSeconds);
-	void End();
 
 	void OnKeyDown(const SDL_KeyboardEvent& e);
 	void OnKeyUp(const SDL_KeyboardEvent& e);
